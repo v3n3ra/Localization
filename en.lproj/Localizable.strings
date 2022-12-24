@@ -1,0 +1,11 @@
+/* 
+  Localizable.strings
+  Localization
+
+  Created by V K on 24.12.2022.
+  
+*/
+
+"MY.LOCALIZED.TEXT" = "My localized text in English";
+"ViewController.label.text" = "My localized text";
+
