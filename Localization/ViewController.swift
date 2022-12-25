@@ -8,7 +8,7 @@
 import UIKit
 
 class ViewController: UIViewController {
-   
+    
     let myLabel: UILabel = {
         let label = UILabel()
         label.translatesAutoresizingMaskIntoConstraints = false
@@ -17,7 +17,7 @@ class ViewController: UIViewController {
         label.layer.borderWidth = 0.6
         label.layer.borderColor = UIColor.white.cgColor
         label.layer.cornerRadius = 3
-        label.font = .systemFont(ofSize: 35)
+        label.font = .systemFont(ofSize: 30)
         label.backgroundColor = UIColor(named: "labelBackground")
         return label
     }()
@@ -43,14 +43,12 @@ class ViewController: UIViewController {
         button.layer.borderWidth = 0.5
         button.layer.borderColor = UIColor.white.cgColor
         button.layer.cornerRadius = 3
-//        button.layer.opacity = 0.85
         return button
     }()
     
-    
     override func viewDidLoad() {
         super.viewDidLoad()
-        view.applyGradient(isVertical: false, colorArray: [.cyan, .magenta])
+        view.applyGradient(isVertical: false, colorArray: [UIColor(named: "ChristmasGold")!, UIColor(named: "ChristmasGreen")!])
         
         view.addSubview(myLabel)
         
@@ -59,11 +57,9 @@ class ViewController: UIViewController {
         alertButton.addTarget(self, action: #selector(alertButtonTapped), for: .touchUpInside)
         view.addSubview(alertButton)
         
-        
         setupConstraints()
     }
     
-
     func setupConstraints() {
         NSLayoutConstraint.activate([
             myLabel.centerXAnchor.constraint(equalTo: view.centerXAnchor),
@@ -79,17 +75,18 @@ class ViewController: UIViewController {
         ])
     }
     
-    
     @objc func localizeButtonTapped(sender: UIButton) {
-        myLabel.text = NSLocalizedString("MY.LOCALIZED.TEXT", comment: "title text on the main screen")
+        self.myLabel.text = NSLocalizedString("MY.LOCALIZED.TEXT", comment: "title text on the main screen")
     }
     
     @objc func alertButtonTapped(sender: UIButton) {
-        guard let alertView = Bundle.main.loadNibNamed("AlertView", owner: nil)?.first as? AlertView else { return }
+        let alertView: ProgrammaticAlertView = {
+            let view = ProgrammaticAlertView()
+            return view
+        }()
         alertView.translatesAutoresizingMaskIntoConstraints = false
-        
         alertView.frame = CGRect(x: view.center.x, y: view.center.y, width: 0, height: 0)
-        
+        alertView.delegate = self
         view.addSubview(alertView)
         
         NSLayoutConstraint.activate([
@@ -98,27 +95,40 @@ class ViewController: UIViewController {
             alertView.bottomAnchor.constraint(equalTo: view.bottomAnchor),
             alertView.topAnchor.constraint(equalTo: view.topAnchor)
         ])
-        
-        UIView.animate(withDuration: 0.5, delay: 0) {
-//            NSLayoutConstraint.activate([
-//                alertView.leftAnchor.constraint(equalTo: self.view.leftAnchor),
-//                alertView.rightAnchor.constraint(equalTo: self.view.rightAnchor),
-//                alertView.bottomAnchor.constraint(equalTo: self.view.bottomAnchor),
-//                alertView.topAnchor.constraint(equalTo: self.view.topAnchor)
-//            ])
+        UIView.animate(withDuration: 4, delay: 0, options: .transitionFlipFromBottom) {
+//            self.view.addSubview(alertView)
             self.view.layoutIfNeeded()
         }
-        
-//        view.setNeedsLayout()
     }
+    
+    //        guard let alertView = Bundle.main.loadNibNamed("AlertView", owner: nil)?.first as? AlertView else { return }
+    //        alertView.translatesAutoresizingMaskIntoConstraints = false
+    //
+    //        alertView.frame = CGRect(x: view.center.x, y: view.center.y, width: 0, height: 0)
+    //        alertView.configure("Merry Christmas!", buttonTitle: "Ho-ho-ho")
+    //        alertView.delegate = self
+    //        view.addSubview(alertView)
+    //
+    //        NSLayoutConstraint.activate([
+    //            alertView.leftAnchor.constraint(equalTo: view.leftAnchor),
+    //            alertView.rightAnchor.constraint(equalTo: view.rightAnchor),
+    //            alertView.bottomAnchor.constraint(equalTo: view.bottomAnchor),
+    //            alertView.topAnchor.constraint(equalTo: view.topAnchor)
+    //        ])
+    //
+    //        UIView.animate(withDuration: 0.5, delay: 0) {
+    //            self.view.layoutIfNeeded()
+    //        }
+    ////        view.setNeedsLayout()
+    //    }
+    //    }
 }
-
 
 extension UIView {
     
     func applyGradient(isVertical: Bool, colorArray: [UIColor]) {
         layer.sublayers?.filter{ $0 is CAGradientLayer }.forEach{ $0.removeFromSuperlayer() }
-         
+        
         let gradientLayer = CAGradientLayer()
         gradientLayer.colors = colorArray.map{ $0.cgColor }
         if isVertical {
@@ -126,12 +136,18 @@ extension UIView {
             gradientLayer.locations = [0.0, 1.0]
         } else {
             //left to right
-            gradientLayer.startPoint = CGPoint(x: 0.0, y: 0.5)
-            gradientLayer.endPoint = CGPoint(x: 1.0, y: 0.5)
+            gradientLayer.startPoint = CGPoint(x: 0.0, y: 0.2)
+            gradientLayer.endPoint = CGPoint(x: 0.5, y: 0.7)
         }
         
         backgroundColor = .clear
         gradientLayer.frame = bounds
         layer.insertSublayer(gradientLayer, at: 0)
+    }
+}
+
+extension ViewController: AlertViewDelegate {
+    func didCloseView(_ view: ProgrammaticAlertView) {
+        print("did close view")
     }
 }
